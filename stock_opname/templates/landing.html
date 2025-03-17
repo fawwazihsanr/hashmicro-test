@@ -1,0 +1,58 @@
+<h1>Product Page</h1>
+{% if request.user.role in 'manager user' %}
+    <div style="display: flex; justify-content: space-around; flex-direction: column">
+        <form method="POST" action="{% url 'product' %}" id="productForm">
+            {% csrf_token %}
+            <input type="hidden" name="_method" id="method" value="POST">
+            <input type="hidden" name="product_id" id="productId">
+            <label>Product Name:</label>
+            <input type="text" name="name" id="name" placeholder="Enter product name" required>
+            <label>Barcode</label>
+            <input type="text" name="barcode" id="barcode" placeholder="Enter barcode" required>
+            <label>Price</label>
+            <input type="number" name="price" id="price" step="0.01" placeholder="Enter price" required>
+            <label>Stock</label>
+            <input type="number" name="stock" id="stock" placeholder="Enter stock" required>
+            <button type="submit" id="submitButton">Add Product</button>
+        </form>
+    </div>
+{% endif %}
+<ul>
+    {% for product in products %}
+    <li>
+        {{ product.name }} - {{ product.price }}
+        {% if request.user.role in 'manager user' %}
+            <button class="edit-btn"
+                data-id="{{ product.id }}"
+                data-name="{{ product.name }}"
+                data-barcode="{{ product.barcode }}"
+                data-price="{{ product.price }}"
+                data-stock="{{ product.stock }}">Edit
+            </button>
+        {% endif %}
+        {% if request.user.role in 'manager' %}
+            <form method="POST" action="{% url 'product-edit' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" onclick="return confirm('Are you sure to delete this data?')">Delete</button>
+            </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = document.getElementById('productForm');
+        form.action = `{% url 'product-edit' 0 %}`.replace('0', this.dataset.id);
+        document.getElementById('method').value = 'PUT';
+        document.getElementById('name').value = this.dataset.name;
+        document.getElementById('barcode').value = this.dataset.barcode;
+        document.getElementById('price').value = this.dataset.price;
+        document.getElementById('stock').value = this.dataset.stock;
+        document.getElementById('submitButton').textContent = 'Update Product';
+    });
+});
+</script>

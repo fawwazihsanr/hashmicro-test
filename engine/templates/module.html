@@ -1,0 +1,64 @@
+<h1>Module List</h1>
+<ul>
+    {% for module in modules %}
+    <li>
+        {{ module.name }}
+        {% if module.is_active %}
+            {% if request.user.role in 'manager' %}
+                <button onclick="uninstallModule('{{ module.name }}')">Uninstall</button>
+            {% endif %}
+            <button onclick="visitModule('{{ module.name }}')">Visit</button>
+        {% else %}
+            {% if request.user.role in 'manager' %}
+                <button onclick="installModule('{{ module.name }}')">Install</button>
+            {% endif %}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button>Logout</button>
+</form>
+
+<script>
+    function installModule(moduleName) {
+        fetch('/engine/module', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `module_name=${moduleName}`
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        });
+    }
+
+    function uninstallModule(moduleName) {
+        fetch(`/engine/module?module_name=${moduleName}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        }).then(response => {
+            window.location.href = response.url;
+        });
+    }
+
+    function visitModule(moduleName) {
+        fetch(`/${moduleName}`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = response.url;
+            }
+        })
+    }
+</script>
