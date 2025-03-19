@@ -1,5 +1,8 @@
 # Hashmicro backend test
 
+## Requirements
+- Python 3.9
+  
 ## Features
 
 - **Product Management**
@@ -19,11 +22,12 @@
 
 ## Installation
 
-1. use virtual environment
-2. ``source .venv/bin/activate``
-3. ``pip install -r requirements.txt``
-4. ``./manage.py runserver``
-5. go to ```http://localhost:8000/auth/login/```
+1. Install virtualenv: ``pip install virtualenv``
+2. Create virtualenv in the directory you are in: ``virtualenv venv`
+3. ``source .venv/bin/activate``
+4. ``pip install -r requirements.txt``
+5. ``./manage.py runserver``
+6. go to ```http://localhost:8000/auth/login/```
 
 ## Authentication
 Use this credentials for login
